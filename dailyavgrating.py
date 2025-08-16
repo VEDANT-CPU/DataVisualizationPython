@@ -1,23 +1,32 @@
 import justpy as jp
 import json
+#Code from BuildingPlot.ipnyb. To load the dataframe.
+import pandas
+from datetime import datetime #For performing time based filtering
+from pytz import utc #To set utc as timezone in my datetime() calls
+import matplotlib.pyplot as plt #To plot information and data.
+my_data=pandas.read_csv("C:\\Users\\VEDANT\\Desktop\\DataVisualization\\reviews.csv",parse_dates=['Timestamp']) #Pass parse_dates to instruct python which column is to be read as datetime.
+my_data['Day']=my_data['Timestamp'].dt.date
+day_avg=my_data.groupby(['Day']).mean(numeric_only=True)
+#End of code from BuildingPlot.ipnyb
 
 graph_def = """
 {
   "chart": {
     "type": "spline",
-    "inverted": true
+    "inverted": false
   },
   "title": {
-    "text": "Atmosphere Temperature by Altitude"
+    "text": "Daily Average Rating"
   },
   "subtitle": {
-    "text": "According to the Standard Atmosphere Model"
+    "text": "According to reviews.csv"
   },
   "xAxis": {
     "reversed": false,
     "title": {
       "enabled": true,
-      "text": "Altitude"
+      "text": "Day"
     },
     "labels": {
       "format": "{value} km"
@@ -30,13 +39,13 @@ graph_def = """
   },
   "yAxis": {
     "title": {
-      "text": "Temperature"
+      "text": "Rating"
     },
     "labels": {
       "format": "{value}°"
     },
     "accessibility": {
-      "rangeDescription": "Range: -90°C to 20°C."
+      "rangeDescription": "Range: 0 to 5."
     },
     "lineWidth": 2
   },
@@ -45,7 +54,7 @@ graph_def = """
   },
   "tooltip": {
     "headerFormat": "<b>{series.name}</b><br/>",
-    "pointFormat": "{point.x} km: {point.y}°C"
+    "pointFormat": "{point.x} {point.y}"
   },
   "plotOptions": {
     "spline": {
@@ -88,7 +97,9 @@ def quazar1():
     #to access its keys through dot notation.
     high_chart_component.options.title.text = "Average rating by day"
     #Changing data of the plot.
-    high_chart_component.options.series[0].data = [[1,4],[4,6],[6,8]]
+    #Taking data from a table store it in 2 array then graph it
+    high_chart_component.options.xAxis.categories = list(day_avg.index)
+    high_chart_component.options.series[0].data = list(day_avg['Rating'])
     print(high_chart_component.options)
 
     return wp
