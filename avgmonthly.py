@@ -4,7 +4,7 @@ import json
 import pandas
 from datetime import datetime #For performing time based filtering
 import matplotlib.pyplot as plt #To plot information and data.
-my_data=pandas.read_csv("reviews.csv",parse_dates=['Timestamp']) #Pass parse_dates to instruct python which column is to be read as datetime.
+my_data=pandas.read_csv("C:\\Users\\VEDANT\\Desktop\\DataVisualization\\reviews.csv",parse_dates=['Timestamp']) #Pass parse_dates to instruct python which column is to be read as datetime.
 my_data['Month'] = my_data['Timestamp'].dt.strftime("%Y %m")
 month_avg = my_data.groupby(['Month']).mean(numeric_only=True)
 
@@ -86,6 +86,9 @@ def myquasar():
     hed = jp.QDiv(a=wp, text="Monthly Avg Rating", classes="text-h2 text-weigth-light")
     para = jp.QDiv(a=wp, text="Below is the plot of monthly ratings")
     hc = jp.HighCharts(a=wp, options=chart_dict)
-    hc.options.xAxis.categories = list()
+    hc.options.xAxis.categories = list(month_avg.index)
+    hc.options.series[0].data = list(month_avg['Rating'])
 
     return wp
+
+jp.justpy(myquasar)
