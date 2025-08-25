@@ -6,8 +6,8 @@ from datetime import datetime #For performing time based filtering
 from pytz import utc #To set utc as timezone in my datetime() calls
 import matplotlib.pyplot as plt #To plot information and data.
 my_data=pandas.read_csv("C:\\Users\\VEDANT\\Desktop\\DataVisualization\\reviews.csv",parse_dates=['Timestamp']) #Pass parse_dates to instruct python which column is to be read as datetime.
-my_data['Day']=my_data['Timestamp'].dt.date
-day_avg=my_data.groupby(['Day']).mean(numeric_only=True)
+my_data['Week']=my_data['Timestamp'].dt.strftime('%Y %U')
+week_avg=my_data.groupby(['Week']).mean(numeric_only=True)
 #End of code from BuildingPlot.ipnyb
 
 week_def = '''
@@ -25,11 +25,6 @@ week_def = '''
       "text": "Number of Employees"
     }
   },
-  "xAxis": {
-    "accessibility": {
-      "rangeDescription": "Range: 2010 to 2022"
-    }
-  },
   "legend": {
     "layout": "vertical",
     "align": "right",
@@ -39,44 +34,15 @@ week_def = '''
     "series": {
       "label": {
         "connectorAllowed": false
-      },
-      "pointStart": 2010
+      }
     }
   },
   "series": [
     {
-      "name": "Installation & Developers",
+      "name": "Avg course rating of week",
       "data": [
         43934, 48656, 65165, 81827, 112143, 142383,
         171533, 165174, 155157, 161454, 154610, 168960, 171558
-      ]
-    },
-    {
-      "name": "Manufacturing",
-      "data": [
-        24916, 37941, 29742, 29851, 32490, 30282,
-        38121, 36885, 33726, 34243, 31050, 33099, 33473
-      ]
-    },
-    {
-      "name": "Sales & Distribution",
-      "data": [
-        11744, 30000, 16005, 19771, 20185, 24377,
-        32147, 30912, 29243, 29213, 25663, 28978, 30618
-      ]
-    },
-    {
-      "name": "Operations & Maintenance",
-      "data": [
-        null, null, null, null, null, null, null,
-        null, 11164, 11218, 10077, 12530, 16585
-      ]
-    },
-    {
-      "name": "Other",
-      "data": [
-        21908, 5548, 8105, 11248, 8989, 11816, 18274,
-        17300, 13053, 11906, 10073, 11471, 11648
       ]
     }
   ],
@@ -107,6 +73,17 @@ def quazar1():
     para1 = jp.QDiv(a=wp, text="This graph presents ratings of courses")
 
     hc = jp.HighCharts(a = wp, options = week_def_dict)
+    #Now we acces the keys of hc.options daictionary through dot notation.
+    hc.options.title.text = 'Weekly average course rating plot'
+    #hc.options.subtitle.text = 'weekly'
+    hc.options.yAxis.title.text = 'Ratings'
+    #hc.options.xaxis.accessibility.rangeDescription = 'Range: 2018 to 2021'
+    #hc.options.plotOptions.pointStart = 2018
+    hc.options.xAxis.categories = list(week_avg.index)
+    #remove the xAxis block from json variable because you have set xAxis through categories.
+    #Also remove pointStart from plotOptions in the json variable.
+    hc.options.series[0].data = list(week_avg['Rating'])
+
     return wp
 
 #Now, we need a function call to create and access the quasar page.
